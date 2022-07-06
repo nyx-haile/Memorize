@@ -1,0 +1,9 @@
+{
+  "init": 1,
+  "weight": 1,
+  "questions": 3,
+  "question_location": "questions/example.json",
+  "log_location": "log.json",
+  "api_config": 0,
+  "ask_all": 1
+}
