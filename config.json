@@ -4,7 +4,7 @@
     "weight": 1,
     "questions": 3,
     "question_location": [
-        "questions/example.json",
+        "questions/example.json"
     ],
     "api_config": 0,
     "ask_all": 1
