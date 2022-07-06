@@ -2,10 +2,17 @@ import json
 import math
 import random
 import hashlib
+import os
+import time
+#import getpass
+#import pygame #potentially use
+
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 class Memorize():
 
-    def setup(self):
+    def tutorial(self):
         self.config['init']=0
         print("""Memorize is a basic framework that you can build on to memorize anything you want.
 I designed Memorize with passwords in mind, so a few of its (admittedly already sparse) features have that in mind.
@@ -44,6 +51,7 @@ The format of Memorize will in general look like this: \n""")
         self.exit()
 
     def ask(self, question):
+        clear()
         # create an ID for use in the log files using SHA1 hash.
         # This is done so that questions which contain hints to secure
         # information (passwords) can be stored in a less secure location
@@ -55,14 +63,32 @@ The format of Memorize will in general look like this: \n""")
 
         #the list format corresponds to [attempts, fails, fraction correct]
 
-        resp = input(question+" ")
-        if resp != self.questions[question]:
-            print('Incorrect.')
-            print('The correct answer was: "'+self.questions[question]+'"')
-            self.log[id][1]+=1
+        #tag handling
 
-        self.log[id][0]+=1
-        self.log[id][2]=1-self.log[id][1]/self.log[id][0]
+        ans=self.questions[question]["answers"]
+
+        for a in range(self.questions[question].get("attempts", 1)):
+            resp = input(question+"\n")
+            if resp not in ans:
+                print('Incorrect.')
+                time.sleep(0.5)
+                clear()
+                self.log[id][1]+=1
+                self.review.add(question)
+
+            else:
+                print('Correct')
+                self.log[id][0]+=1
+                self.log[id][2]=1-self.log[id][1]/self.log[id][0]
+                break
+
+            self.log[id][0]+=1
+            self.log[id][2]=1-self.log[id][1]/self.log[id][0]
+
+        print('Answer(s): '+str(ans))
+        time.sleep(1)
+        if question in self.review:
+            cont = input('Press Any Key to Continue:')
         #question tags? (eg. attempts, lower ok, timed, etc)
         #block accidental blank responses?
         #allow mark misspelling as a tag
@@ -72,6 +98,7 @@ The format of Memorize will in general look like this: \n""")
 
 
     def __init__(self):
+        clear()
         # LOAD CONFIG
 
         c = open("config.json")
@@ -80,14 +107,23 @@ The format of Memorize will in general look like this: \n""")
 
         # LOAD QUESTIONS
         #check for a list of locations
-        q = open(self.config['question_location'])
-        self.questions = json.load(q)
-
+        self.questions={}
+        for loc in self.config['question_location']:
+            try:
+                q = open(loc, 'r')
+                self.questions |= json.load(q)
+            except:
+                continue
         # LOAD LOG
 
-        l = open(self.config['log_location'])
-        self.log = json.load(l)
-        l.close()
+        try:
+            l = open('log.json')
+            self.log = json.load(l)
+            l.close()
+        except:
+            self.log={}
+
+        self.review=set()
 
         # CONFIG CHECKS
         if self.config["enable_logo"]:
@@ -100,11 +136,12 @@ The format of Memorize will in general look like this: \n""")
                 ╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝╚══════╝╚══════╝.py
                 the humble memorization script
             """)
+            time.sleep(1.5)
         if self.config['init']:
             resp = input(
-                    """Since this is your first time using Memorize, I recommend you go through the setup. Do you want to go through the setup/tutorial? Y/N \n""")
+                    """Since this is your first time using Memorize, I recommend you go through the tutorial. Do you want to go through the tutorial? Y/N \n""")
             if resp.lower() == 'y':
-                self.setup()
+                self.tutorial()
             else:
                 self.config['init']=0
 
@@ -115,17 +152,47 @@ The format of Memorize will in general look like this: \n""")
             print('You have set less than one question to be asked. Check your config.json')
 
         if self.config['ask_all'] and not self.config['init']:
+            print("""
+                 █ █ █   ▀█▀ ▀█▀ █▄█ █▀█ ▀█▀ █▀▀   █▀▄ █▀█ █ █ █▀█ █▀▄
+                 █ █ █    █   █  █ █ █▀█  █  █▀▀   █▀▄ █ █ █ █ █ █ █ █
+                 ▀▀▀ ▀▀▀  ▀  ▀▀▀ ▀ ▀ ▀ ▀  ▀  ▀▀▀   ▀ ▀ ▀▀▀ ▀▀▀ ▀ ▀ ▀▀
+                """) #NEEDS WORK
+            time.sleep(1.5)
             for question in self.questions:
                 self.ask(question)
 
+            self.exit()
         #initial question configuration?
 
+    def refresh(self):
+        clear()
+        review_list = list(self.review)
+        self.review=set()
+        for question in review_list:
+            self.ask(question)
+        if self.review != set():
+            self.refresh()
 
     def exit(self):
+        clear()
+        if self.review != set():
+            print('Review Time!') #needs work
+            time.sleep(1)
+            self.refresh()
+        clear()
+        print("""
+            ███╗   ███╗███████╗███╗   ███╗ ██████╗ ██████╗ ██╗███████╗███████╗
+            ████╗ ████║██╔════╝████╗ ████║██╔═══██╗██╔══██╗██║╚══███╔╝██╔════╝
+            ██╔████╔██║█████╗  ██╔████╔██║██║   ██║██████╔╝██║  ███╔╝ █████╗
+            ██║╚██╔╝██║██╔══╝  ██║╚██╔╝██║██║   ██║██╔══██╗██║ ███╔╝  ██╔══╝
+            ██║ ╚═╝ ██║███████╗██║ ╚═╝ ██║╚██████╔╝██║  ██║██║███████╗███████╗
+            ╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝╚══════╝╚══════╝.py
+            See you next time!
+        """)
         #review all answers (especially incorrect?)
         #dump statistics in logs
-        print(self.log)
-        l = open(self.config["log_location"], "w")
+        #print(self.log)
+        l = open('log.json', "w")
         json.dump(self.log, l, indent=4)
         l.close()
         #modify config settings if necessary

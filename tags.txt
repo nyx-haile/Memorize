@@ -1,0 +1,3 @@
+attempts (numeric)
+case-sensitive (anything other than 0 is on, default is yes)
+hide-text (needs development)
