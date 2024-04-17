@@ -1,5 +1,0 @@
-{
-  "Example Password A" : {"answers":["12345"],"attempts":3, "hide-text":1},
-  "Example Password B" : {"answers":["67890"],"attempts":3, "hide-text":1},
-  "Example Password C" : {"answers":["12345", "mlkmcdslkm8u345mnsh(Y*&Hujb3409ukjn(*&TY*Gb h34oijosdu9y9y))", "67890"],"attempts":3, "hide-text":1}
-}

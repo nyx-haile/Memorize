@@ -1,3 +1,6 @@
 attempts (numeric)
 case-sensitive (anything other than 0 is on, default is yes)
 hide-text (needs development)
+reversible [0, 1] (1: enabled, an answer can become the question, and you can answer with the original)
+difficulty-scaling (lock away answers that are too easy.)
+degree of accuracy (for now, numeric answers only, as an order of magnitude) UNDER development

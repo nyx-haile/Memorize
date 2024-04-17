@@ -26,7 +26,7 @@ def q_update(dict):
         if tags_input:
             tags=[i.split(':') for i in tags_input.split('||')]
             for tag in tags:
-                dict[q][tag[0]]=tag[1]
+                dict[q][tag[0]]=int(tag[1])
 
         end = input('Done adding questions? Y/N\n')
         if end.lower()=='y':

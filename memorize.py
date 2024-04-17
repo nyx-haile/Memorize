@@ -95,8 +95,6 @@ The format of Memorize will in general look like this: \n""")
         #create log
         #recommend prio?
 
-
-
     def __init__(self):
         clear()
         # LOAD CONFIG
@@ -105,27 +103,6 @@ The format of Memorize will in general look like this: \n""")
         self.config=json.load(c)
         c.close()
 
-        # LOAD QUESTIONS
-        #check for a list of locations
-        self.questions={}
-        for loc in self.config['question_location']:
-            try:
-                q = open(loc, 'r')
-                self.questions |= json.load(q)
-            except:
-                continue
-        # LOAD LOG
-
-        try:
-            l = open('log.json')
-            self.log = json.load(l)
-            l.close()
-        except:
-            self.log={}
-
-        self.review=set()
-
-        # CONFIG CHECKS
         if self.config["enable_logo"]:
             print("""
                 ███╗   ███╗███████╗███╗   ███╗ ██████╗ ██████╗ ██╗███████╗███████╗
@@ -136,7 +113,33 @@ The format of Memorize will in general look like this: \n""")
                 ╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝╚══════╝╚══════╝.py
                 the humble memorization script
             """)
-            time.sleep(1.5)
+
+        # LOAD QUESTIONS
+        #check for a list of locations
+        self.questions={}
+        for loc in self.config['question_location']:
+            try:
+                q = open(loc, 'r')
+                self.questions |= json.load(q)
+                print('/loaded: '+loc)
+            except:
+                print
+                continue
+        # LOAD LOG
+
+        try:
+            l = open('log.json')
+            self.log = json.load(l)
+            l.close()
+            print('/loaded log')
+        except:
+            print('/log loading failed')
+            self.log={}
+
+        self.review=set()
+
+        # CONFIG CHECKS
+        time.sleep(2.5)
         if self.config['init']:
             resp = input(
                     """Since this is your first time using Memorize, I recommend you go through the tutorial. Do you want to go through the tutorial? Y/N \n""")
